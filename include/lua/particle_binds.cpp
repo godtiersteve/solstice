@@ -1,0 +1,201 @@
+#include "particle_binds.h"
+
+namespace solstice {
+void SetupParticleBinds(kaguya::State& state) {
+        state["ParticleFrame"].setClass(kaguya::UserdataMetatable<ParticleAnimFrame>()
+                                    .setConstructors<ParticleAnimFrame(), ParticleAnimFrame(int, int), ParticleAnimFrame(int, int, int)>()
+                                    .addProperty("row", &ParticleAnimFrame::row)
+                                    .addProperty("col", &ParticleAnimFrame::col)
+                                    .addProperty("duration", &ParticleAnimFrame::mDuration)
+                                    );
+    state["ParticleAnimation"].setClass(kaguya::UserdataMetatable<ParticleAnimation, Animator<ParticleAnimFrame> >()
+                                        .setConstructors<ParticleAnimation()>()
+                                        .addOverloadedFunctions("AddFrame", static_cast<void (ParticleAnimation::*)(ParticleAnimFrame)>(&ParticleAnimation::AddFrame))
+                                        );
+    state["Particle"].setClass(kaguya::UserdataMetatable<Particle>()
+                               .setConstructors<Particle()>()
+                               .addOverloadedFunctions("Init", static_cast<void (Particle::*)(glm::vec3, glm::vec3, glm::vec3)>(&Particle::Init),
+                                                               static_cast<void (Particle::*)(glm::vec3, glm::vec3, float, float)>(&Particle::Init))
+                               .addOverloadedFunctions("SetAttributes",
+                                                        static_cast<void (Particle::*)(glm::vec3, glm::vec3, glm::vec3)>(&Particle::SetAttributes),
+                                                        static_cast<void (Particle::*)(glm::vec3, glm::vec3, float, float)>(&Particle::SetAttributes),
+                                                        static_cast<void (Particle::*)(ParticlePath)>(&Particle::SetAttributes),
+                                                        static_cast<void (Particle::*)(ParticlePath, float)>(&Particle::SetAttributes)
+                                                       )
+                               .addFunction("GetPosition", &Particle::GetPosition)
+                               .addFunction("SetPosition", &Particle::SetPosition)
+                               .addFunction("GetVelocity", &Particle::GetVelocity)
+                               .addFunction("SetVelocity", &Particle::SetVelocity)
+                               .addFunction("GetAcceleration", &Particle::GetAcceleration)
+                               .addFunction("SetDeceleration", &Particle::SetDeceleration)
+                               .addFunction("SetAcceleration", &Particle::SetAcceleration)
+                               .addFunction("GetMaxSpeed", &Particle::GetMaxSpeed)
+                               .addFunction("SetMaxSpeed", &Particle::SetMaxSpeed)
+                               .addFunction("SetRotateAngle", &Particle::SetRotateAngle)
+                               .addFunction("GetRotateAngle", &Particle::GetRotateAngle)
+                               .addFunction("SetDestroyFrame", &Particle::SetDestroyFrame)
+                               .addFunction("GetDestroyFrame", &Particle::GetDestroyFrame)
+                               .addFunction("GetSize", &Particle::GetSize)
+                               .addFunction("SetSize", &Particle::SetSize)
+                               .addFunction("GetFallSpeed", &Particle::GetFallSpeed)
+                               .addFunction("SetFallSpeed", &Particle::SetFallSpeed)
+                               .addFunction("GetAlpha", &Particle::GetAlpha)
+                               .addFunction("SetAlpha", &Particle::SetAlpha)
+                               .addFunction("SetFadeStep", &Particle::SetFadeStep)
+                               .addFunction("GetFadeStep", &Particle::GetFadeStep)
+                               .addFunction("SetScaleStep", &Particle::SetScaleStep)
+                               .addFunction("GetScaleStep", &Particle::GetScaleStep)
+                               .addFunction("GetScaleMax", &Particle::GetScaleMax)
+                               .addFunction("SetScaleMax", &Particle::SetScaleMax)
+                               .addFunction("SetStopVelocity", &Particle::SetStopVelocity)
+                               .addFunction("SetDamping", &Particle::SetDamping)
+                               .addFunction("SetAngleVel", &Particle::SetAngleVel)
+                               .addFunction("GetAngleVel", &Particle::GetAngleVel)
+                               .addFunction("SetResetFrame", &Particle::SetResetFrame)
+                               .addFunction("GetResetFrame", &Particle::GetResetFrame)
+                               .addFunction("SetTextureOffset", &Particle::SetTextureOffset)
+                               .addFunction("SetXRotates", &Particle::SetXRotates)
+                               .addFunction("SetYRotates", &Particle::SetYRotates)
+                               .addFunction("SetZRotates", &Particle::SetZRotates)
+                               .addFunction("SetStartFrame", &Particle::SetStartFrame)
+                               .addFunction("SetInitialState", &Particle::SetInitialState)
+                               .addFunction("SaveInitialState", &Particle::SaveInitialState)
+                               .addFunction("SetAnimRowCol", &Particle::SetAnimRowCol)
+                               .addFunction("SetAnimRow", &Particle::SetAnimRow)
+                               .addFunction("SetAnimCol", &Particle::SetAnimCol)
+                               .addFunction("SetClipSize", &Particle::SetClipSize)
+                               .addFunction("GetNumFrames", &Particle::GetNumFrames)
+                               .addFunction("GetXRotates", &Particle::GetXRotates)
+                               .addFunction("GetYRotates", &Particle::GetYRotates)
+                               .addFunction("GetZRotates", &Particle::GetZRotates)
+                               .addFunction("GetStartFrame", &Particle::GetStartFrame)
+                               .addFunction("GetAnimRow", &Particle::GetAnimRow)
+                               .addFunction("GetAnimCol", &Particle::GetAnimCol)
+                               .addFunction("GetClipSize", &Particle::GetClipSize)
+                               .addFunction("AddFrame", &Particle::AddFrame)
+                               .addFunction("SetDestroyedBy", &Particle::SetDestroyedBy)
+                               .addFunction("GetDestroyedBy", &Particle::GetDestroyedBy)
+                               .addFunction("AddAnimationFrame", &Particle::AddAnimationFrame)
+                               .addFunction("SetDecelsToStop", &Particle::SetDecelsToStop)
+                               .addFunction("SetInitialVelocity", &Particle::SetInitialVelocity)
+                               .addProperty("angle", &Particle::mAngle)
+                                );
+    state["ValueRangef"].setClass(kaguya::UserdataMetatable<ValueRangef>()
+                                 .setConstructors<ValueRangef(), ValueRangef(float), ValueRangef(float, float)>()
+                                 .addProperty("min", &ValueRangef::min)
+                                 .addProperty("max", &ValueRangef::max)
+                                 );
+    state["ValueRangeui"].setClass(kaguya::UserdataMetatable<ValueRangeui>()
+                                 .setConstructors<ValueRangeui(), ValueRangeui(float), ValueRangeui(float, float)>()
+                                 .addProperty("min", &ValueRangeui::min)
+                                 .addProperty("max", &ValueRangeui::max)
+                                 );
+    state["ValueRangei"].setClass(kaguya::UserdataMetatable<ValueRangei>()
+                                 .setConstructors<ValueRangei(), ValueRangei(float), ValueRangei(float, float)>()
+                                 .addProperty("min", &ValueRangei::min)
+                                 .addProperty("max", &ValueRangei::max)
+                                 );
+    state["ValueRange2f"].setClass(kaguya::UserdataMetatable<ValueRange2f>()
+                                 .setConstructors<ValueRange2f(), ValueRange2f(glm::vec2), ValueRange2f(glm::vec2, glm::vec2)>()
+                                 .addProperty("min", &ValueRange2f::min)
+                                 .addProperty("max", &ValueRange2f::max)
+                                 );
+    state["ValueRange3f"].setClass(kaguya::UserdataMetatable<ValueRange3f>()
+                                 .setConstructors<ValueRange3f(), ValueRange3f(glm::vec3), ValueRange3f(glm::vec3, glm::vec3)>()
+                                 .addProperty("min", &ValueRange3f::min)
+                                 .addProperty("max", &ValueRange3f::max)
+                                 );
+    state["RNGRange"].setClass(kaguya::UserdataMetatable<RNGRange>()
+                               .setConstructors<RNGRange(), RNGRange(glm::vec3, glm::vec3), RNGRange(float, float), RNGRange(float, float, float)>()
+                               .addProperty("min", &RNGRange::min)
+                               .addProperty("max", &RNGRange::max)
+                               );
+    state["ParticleState"].setClass(kaguya::UserdataMetatable<ParticleState>()
+                                    .setConstructors<ParticleState()>()
+                                    .addProperty("position", &ParticleState::position)
+                                    .addProperty("velocity", &ParticleState::velocity)
+                                    .addProperty("rotateAngle", &ParticleState::rotateAngle)
+                                    .addProperty("angle", &ParticleState::angle)
+                                    .addProperty("angleVel", &ParticleState::angleVel)
+                                    .addProperty("size", &ParticleState::size)
+                                    .addProperty("alpha", &ParticleState::alpha)
+                                    );
+    state["ParticlePath"].setClass(kaguya::UserdataMetatable<ParticlePath>()
+                                    .setConstructors<ParticleState()>()
+                                    .addProperty("pos", &ParticlePath::pos)
+                                    .addProperty("accel", &ParticlePath::accel)
+                                    .addProperty("decel", &ParticlePath::decel)
+                                    .addProperty("vel", &ParticlePath::vel)
+                                    .addProperty("sizeStep", &ParticlePath::sizeStep)
+                                    .addProperty("size", &ParticlePath::size)
+                                    .addProperty("alpha", &ParticlePath::alpha)
+                                    .addProperty("alphaStep", &ParticlePath::alphaStep)
+                                    .addProperty("damping", &ParticlePath::damping)
+                                    );
+    state["ParticleSprayer"].setClass(kaguya::UserdataMetatable<ParticleSprayer, Particle>()
+                                      .setConstructors<ParticleSprayer(), ParticleSprayer(size_t)>()
+                                      .addFunction("SetFallSpeed", &ParticleSprayer::SetFallSpeed)
+                                      .addFunction("SetParticlesPerFrame", &ParticleSprayer::SetParticlesPerFrame)
+                                      .addFunction("SetMaxParticles", &ParticleSprayer::SetMaxParticles)
+                                      .addFunction("SetVelocityRange", &ParticleSprayer::SetVelocityRange)
+                                      .addFunction("SetAccelRange", &ParticleSprayer::SetAccelRange)
+                                      .addFunction("SetDecelRange", &ParticleSprayer::SetDecelRange)
+                                      .addFunction("SetParticleAlphas", &ParticleSprayer::SetParticleAlphas)
+                                      .addFunction("SetResetFrame", &ParticleSprayer::SetResetFrame)
+                                      .addFunction("SetDestroyRange", &ParticleSprayer::SetDestroyRange)
+                                      .addFunction("SetFadeRange", &ParticleSprayer::SetFadeRange)
+                                      .addFunction("SetAlphaRange", &ParticleSprayer::SetAlphaRange)
+                                      .addFunction("SetTextureID", &ParticleSprayer::SetTextureID)
+                                      .addFunction("SetColor", &ParticleSprayer::SetColor)
+                                      .addFunction("SetSizeRange", &ParticleSprayer::SetSizeRange)
+                                      .addFunction("SetScaleStepRange", &ParticleSprayer::SetScaleStepRange)
+                                      .addFunction("SetScaleMax", &ParticleSprayer::SetScaleMax)
+                                      .addFunction("SetMaxSpeed", &ParticleSprayer::SetMaxSpeed)
+                                      .addFunction("SetFrameStep", &ParticleSprayer::SetFrameStep)
+                                      .addFunction("SetAngleStepRange", &ParticleSprayer::SetAngleStepRange)
+                                      .addFunction("SetAngleVelRange", &ParticleSprayer::SetAngleVelRange)
+                                      .addFunction("SetTextureClip", &ParticleSprayer::SetTextureClip)
+                                      .addFunction("SetBlend", &ParticleSprayer::SetBlend)
+                                      .addFunction("SetResetsSelf", &ParticleSprayer::SetResetsSelf)
+                                      .addFunction("AddFixedParticle", &ParticleSprayer::AddFixedParticle)
+                                      .addFunction("CreateParticlesPath", &ParticleSprayer::CreateParticlesPath)
+                                      .addFunction("CreateParticlesPathArc", &ParticleSprayer::CreateParticlesPathArc)
+                                      .addFunction("GenerateParticles", &ParticleSprayer::GenerateParticles)
+                                      .addFunction("SetParticleOffsets", &ParticleSprayer::SetParticleOffsets)
+                                      .addFunction("SetParticleAnimations", &ParticleSprayer::SetParticleAnimations)
+                                      .addFunction("SetPositionRange", &ParticleSprayer::SetPositionRange)
+                                      .addFunction("SetSpawnDistanceRange", &ParticleSprayer::SetSpawnDistanceRange)
+                                      .addFunction("SetSpawnDistanceMin", &ParticleSprayer::SetSpawnDistanceMin)
+                                      .addFunction("SetNoRespawn", &ParticleSprayer::SetNoRespawn)
+                                      .addFunction("SetDampingRange", &ParticleSprayer::SetDampingRange)
+                                      .addFunction("SetMinSpawnSpeed", &ParticleSprayer::SetMinSpawnSpeed)
+                                      .addFunction("SetBaseAnimation", &ParticleSprayer::SetBaseAnim)
+                                      .addFunction("AddBaseAnimFrame", &ParticleSprayer::AddBaseAnimFrame)
+                                      .addFunction("SetRegenParticles", &ParticleSprayer::SetRegenParticles)
+                                      .addOverloadedFunctions("SetScale", static_cast<void (ParticleSprayer::*)(float)>(&ParticleSprayer::SetScale),
+                                                                          static_cast<void (ParticleSprayer::*)(float, ValueRangef)>(&ParticleSprayer::SetScale))
+                                      .addOverloadedFunctions("SetAngleRange", static_cast<void (ParticleSprayer::*)(float, float)>(&ParticleSprayer::SetAngleRange),
+                                                                               static_cast<void (ParticleSprayer::*)(ValueRangef)>(&ParticleSprayer::SetAngleRange))
+                                      .addOverloadedFunctions("Init", static_cast<void(ParticleSprayer::*)(ValueRangef, glm::vec3, RNGRange)>(&ParticleSprayer::Init),
+                                                                      static_cast<void(ParticleSprayer::*)(RNGRange, RNGRange)>(&ParticleSprayer::Init))
+                                      .addOverloadedFunctions("SetNorm", static_cast<void(ParticleSprayer::*)(float)>(&ParticleSprayer::SetNorm),
+                                                                         static_cast<void(ParticleSprayer::*)(float, float)>(&ParticleSprayer::SetNorm))
+                                );
+    state["ParticleEffect"].setClass(kaguya::UserdataMetatable<ParticleEffect>()
+                                    .setConstructors<ParticleEffect(), ParticleEffect(std::vector<ParticleSprayer>), ParticleEffect(std::vector<ParticleSprayer>, glm::vec3)>()
+                                    .addFunction("SetPosition", ParticleEffect::SetPosition)
+                                    .addFunction("AddSprayer", ParticleEffect::AddSprayer)
+                                    );
+    state["GL_ONE"] = GL_ONE;
+    state["GL_SRC_ALPHA"] = GL_SRC_ALPHA;
+    state["GL_ONE_MINUS_SRC_ALPHA"] = GL_ONE_MINUS_SRC_ALPHA;
+    state["PDESTROY_NONE"] = PDESTROY_NONE;
+    state["PDESTROY_BACKGROUND"] = PDESTROY_BACKGROUND;
+    state["PDESTROY_WATER"] = PDESTROY_WATER;
+    state["PDESTROY_WALL"] = PDESTROY_WALL;
+    state["PDESTROY_ENEMY"] = PDESTROY_ENEMY;
+    state["PDESTROY_BULLET"] = PDESTROY_BULLET;
+    state["PDESTROY_PLAYER"] = PDESTROY_PLAYER;
+    state["PDESTROY_OBJECT"] = PDESTROY_OBJECT;
+}
+}

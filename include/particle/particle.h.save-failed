@@ -1,0 +1,138 @@
+#ifndef PARTICLE_H_INCLUDED
+#define PARTICLE_H_INCLUDED
+
+#include "graphics/graphicglobals.h"
+#include "graphics/vector2.h"
+#include "graphics/quaddata.h"
+#include "animation/animation.h"
+#include <functional>
+
+namespace solstice {
+enum ParticleDestroy{PDESTROY_WALL = 0, PDESTROY_ENEMY = 2, PDESTROY_BULLET = 4, PDESTROY_PLAYER = 8, PDESTROY_OBJECT = 16};
+struct MotionPath {
+    float t, tStep;
+    std::function<glm::vec3(float, float)> Path;
+    MotionPath() {
+        t = 0;
+        tStep = 0;
+        Path = NULL;
+    }
+    operator bool(){return Path != NULL;}
+    glm::vec3 operator()(){return Path(t, tStep);}
+};
+enum ParticleMovementType {PARTMOV_NORMAL, PARTMOV_ANGULAR, PARTMOVE_ANGULAR_ACCEL, PARTMOVE_OSCILLATES};
+struct ParticleState {
+    glm::vec3 position;
+    glm::vec3 velocity;
+    float rotateAngle, angle, angleVel;
+    float size;
+    float alpha;
+};
+class Particle {
+protected:
+    ParticleState mInitialState;
+    Animation mAnimation;
+    Animation mDestroyAnim;
+    Rectanglef mHitBox;
+    GLenum mBlendSrc, mBlendDest;
+    glm::vec3 mPosition;
+    glm::vec3 mVelocity, mAcceleration, mDeceleration;
+    glm::vec3 mStopVelocity;
+    glm::vec3 mMaxSpeed;
+    float mRotateAngle, mAngle, mAngleVel;
+    float mSize, mScaleStep, mScaleMax;
+    glm::vec2 mTextureOffsets;
+    int mCurFrame, mDestroyFrame, mResetFrame, mStartFrame;
+    ParticleDestroy mDestroyedBy;
+    float mFallSpeed;
+    float mAlpha, mFadeStep;
+    bool mDestroyed;
+    bool mXRotates, mYRotates, mZRotates;
+    unsigned short mMaxBounces, mBounces;
+    MotionPath mPath;
+    float mDamping;
+    void CheckVelocity();
+public:
+    Particle();
+    Particle(glm::vec3 pos, glm::vec3 startSpeed, glm::vec3 accel);
+    Particle(glm::vec3 pos, glm::vec3 startSpeed, float angle, float accel);
+    Particle(const ParticleState& state);
+    Particle& operator=(const ParticleState& state);
+    void Update(float t = 1.0f);
+    void Init(glm::vec3 pos, glm::vec3 startSpeed, glm::vec3 accel);
+    void Init(glm::vec3 pos, glm::vec3 startSpeed, float angle, float accel);
+    void SetAttributes(glm::vec3 pos, glm::vec3 startSpeed, float angle, float accel);
+    void SetAttributes(glm::vec3 pos, glm::vec3 startSpeed, glm::vec3 accel);
+
+    glm::vec3 GetPosition()                             {return mPosition;}
+    glm::vec3 GetVelocity()                             {return mVelocity;}
+    glm::vec3 GetAcceleration()                         {return mAcceleration;}
+    glm::vec3 GetMaxSpeed()                             {return mMaxSpeed;}
+    glm::vec3 GetDeceleration()                         {return mDeceleration;}
+    ParticleState& GetInitialState()                    {return mInitialState;}
+    ParticleDestroy GetDestroyedBy()                    {return mDestroyedBy;}
+    float GetRotateAngle()                              {return mRotateAngle;}
+    GLenum GetBlendSrc()                                {return mBlendSrc;}
+    GLenum GetBlendDest()                               {return mBlendDest;}
+    int GetCurFrame()                                   {return mCurFrame;}
+    int GetDestroyFrame()                               {return mDestroyFrame;}
+    float GetSize()                                     {return mSize;}
+    float GetFallSpeed()                                {return mFallSpeed;}
+    float GetAlpha()                                    {return mAlpha;}
+    float GetFadeStep()                                 {return mFadeStep;}
+    float GetScaleStep()                                {return mScaleStep;}
+    float GetScaleMax()                                 {return mScaleMax;}
+    float GetDamping()                                  {return mDamping;}
+    glm::vec3 GetStopVelocity()                         {return mStopVelocity;}
+    Rectanglef& GetHitBox()                             {return mHitBox;}
+    Animation& GetAnimation()                           {return mAnimation;}
+    Animation& GetDestroyAnim()                         {return mDestroyAnim;}
+    Rectanglef* GetHitBoxPtr()                          {return &mHitBox;}
+    Animation* GetAnimationPtr()                        {return &mAnimation;}
+    Animation* GetDestroyAnimPtr()                      {return &mDestroyAnim;}
+    float GetAngleVel()                                 {return mAngleVel;}
+    glm::vec2 GetTextureOffsets()                       {return mTextureOffsets;}
+    QuadData GetDrawQuad();
+    void SetPosition(glm::vec3 pos);
+    void SetVelocity(glm::vec3 vel)                     {mVelocity = vel; mInitialState.velocity = vel;}
+    void SetAcceleration(glm::vec3 accel)               {mAcceleration = accel;}
+    void SetMaxSpeed(glm::vec3 spd)                     {mMaxSpeed = spd;}
+    void SetRotateAngle(float angle)                    {mRotateAngle = angle;}
+    void SetDestroyedBy(ParticleDestroy des)            {mDestroyedBy = des;}
+    void SetBlendSrc(GLenum src)                        {mBlendSrc = src;}
+    void SetBlendDest(GLenum dest)                      {mBlendDest = dest;}
+    void SetDestroyFrame(int i)                         {mDestroyFrame = i;}
+    void SetResetFrame(int i)                           {mResetFrame = i;}
+    void SetSize(float s)                               {mSize = s; mInitialState.size = s;}
+    void SetFallSpeed(float s)                          {mFallSpeed = s;}
+    void SetAlpha(float a)                              {mAlpha = a; mInitialState.alpha = a;}
+    void SetFadeStep(float s)                           {mFadeStep = s;}
+    void SetScaleStep(float s)                          {mScaleStep = s;}
+    void SetScaleMax(float s)                           {mScaleMax = s;}
+    void SetStopVelocity(glm::vec3 v)                   {mStopVelocity = v;}
+    void SetDamping(float d)                            {mDamping = d;}
+    void SetAngleVel(float a)                           {mAngleVel = a; mInitialState.angleVel = a;}
+    void SetTextureOffsets(glm::vec2 off)               {mTextureOffsets = off;}
+    void SetXRotates(bool r)                            {mXRotates = r;}
+    void SetYRotates(bool r)                            {mYRotates = r;}
+    void SetZRotates(bool r)                            {mZRotates = r;}
+    bool GetXRotates()                                  {return mXRotates;}
+    bool GetYRotates()                                  {return mYRotates;}
+    bool GetZRotates()                                  {return mZRotates;}
+    void SetRotates(bool x, bool y, bool z)             {mXRotates = x; mYRotates = y; mZRotates = z;}
+    void SetStartFrame(int f)                           {mStartFrame = f;}
+    int GetStartFrame()                                 {return mStartFrame;}
+    void SetDeceleration(glm::vec3 dec);
+    void Start();
+    void Reset(ParticleState initialState);
+    void Reset();
+    operator bool() {return !mDestroyed;}
+    bool Alive() {return !mDestroyed;}
+    bool Destroyed() {return mDestroyed;}
+    void Destroy() {mDestroyed = true;}
+};
+
+}
+
+
+#endif // PARTICLE_H_INCLUDED
